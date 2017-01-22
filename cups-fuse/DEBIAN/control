@@ -1,10 +1,10 @@
 Package: cups-fuse
-Version: 0.9.38
+Version: 0.9.39
 Section: cups
 Priority: extra
 Architecture: all
 Maintainer: Jakobus Schürz <xundeenergie@gmail.com>
-Homepage: http://github.com/xundeenergie/fuse-cups
+Homepage: http://github.com/xundeenergie/cups-fuse
 Provides: cups-fuse
 Depends: cups, python, python-fuse
 Conflicts: fuse-cups
