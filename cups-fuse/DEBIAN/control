@@ -1,0 +1,12 @@
+Package: cups-fuse
+Version: 0.9.38
+Section: cups
+Priority: extra
+Architecture: all
+Maintainer: Jakobus Schürz <xundeenergie@gmail.com>
+Homepage: http://github.com/xundeenergie/fuse-cups
+Provides: cups-fuse
+Depends: cups, python, python-fuse
+Conflicts: fuse-cups
+Description: Browse cups-printers in $HOME/Printers 
+ fuse-cups provides a fuse-Filesystem to browse your printers in your home-directory. Save a file in printers directory will print it on this printer. See your last printed files, browsing the directories in $HOME/Printers

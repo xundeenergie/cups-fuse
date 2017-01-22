@@ -1,0 +1,10 @@
+[Unit]
+Description=Set XDG_PRINTERS_DIR and XDG_PRINTERS_DIR_SD and start path-unit for cups-fuse
+
+[Service]
+ExecStartPre=/bin/sh -c '/bin/systemctl --user set-environment XDG_PRINTERS_DIR=$(xdg-user-dir PRINTERS)'
+ExecStartPre=/bin/sh -c '/bin/systemctl --user set-environment XDG_PRINTERS_DIR_SD=$(/bin/systemd-escape -p ${XDG_PRINTERS_DIR})'
+ExecStart=/bin/systemctl --user start cups-fuse@${XDG_PRINTERS_DIR_SD}.path
+
+[Install]
+WantedBy=default.target

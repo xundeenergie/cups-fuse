@@ -1,0 +1,6 @@
+[Unit]
+Description=Starts mounting printers to %f, if this directory exists
+
+[Path]
+PathExists=%f
+Unit=cups-fuse@%i.service
