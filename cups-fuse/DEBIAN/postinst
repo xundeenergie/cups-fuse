@@ -40,7 +40,9 @@ case "$1" in
     echo "postinstall-script for fuse-cups"
     loginctl --no-legend -o cat|awk '{print $2,$3}'|sort|uniq|while read i u ; do
     	echo "restart user-systemd for $u $i"
-	/bin/systemctl is-active "user@${i}.service" >/dev/null && /bin/systemctl restart "user@${i}.service"
+	if /bin/systemctl is-active "user@${i}.service" >/dev/null ; then
+		sudo -u $u /bin/systemctl restart --user cups-fuse.service
+	fi
 	sleep 0.5
     	#systemctl |grep "user@{$i}.service"  && echo systemctl restart "user@{$i}.service"
     done
