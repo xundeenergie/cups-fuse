@@ -23,11 +23,16 @@ set -e
 # source debconf library
 . /usr/share/debconf/confmodule
 
+SERVICES="cups-fuse.service"
+TARGET="default.target"
+
 case "$1" in
 
     configure)
-        [ -e /etc/systemd/user/default.target.wants/ ] || mkdir -p /etc/systemd/user/default.target.wants/
-        ln -sf /usr/lib/systemd/user/cups-fuse.service /etc/systemd/user/default.target.wants/cups-fuse.service
+        for SERVICE in $SERVICES; do
+            [ -e "/etc/systemd/user/${TARGET}.wants/" ] || mkdir -p "/etc/systemd/user/${TARGET}.wants/"
+            [ -e "/usr/lib/systemd/user/${SERVICE}" ] && ln -sf "/usr/lib/systemd/user/${SERVICE}" "/etc/systemd/user/${TARGET}.wants/${SERVICE}"
+        done
         # restart systemd-user for all users to reread the printer-configuration
         #    echo "postinstall-script for fuse-cups"
         #the following should restart the systemd --user, but it doesn't work!
