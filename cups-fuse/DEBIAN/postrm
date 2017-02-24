@@ -15,7 +15,9 @@ case "$1" in
 	;;
     abort-upgrade|upgrade)
         ;;
-    remove|failed-upgrade|abort-install|disappear)
+    failed-upgrade|abort-install|disappear)
+        ;;
+    remove)
         ln -sf /dev/null /etc/systemd/user/default.target.wants/cups-fuse.service
         ;;
 
