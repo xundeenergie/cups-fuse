@@ -1,0 +1,26 @@
+#! /bin/sh
+
+set -e
+
+# In case this system is running systemd, we make systemd reload the unit files
+# to pick up changes.
+if [ -d /run/systemd/system ] ; then
+	systemctl --system daemon-reload >/dev/null || true
+fi
+
+case "$1" in
+    purge)
+	rm -rf /etc/systemd/user/cups-fuse.service
+        rm -rf /etc/systemd/user/default.target.wants/cups-fuse.service
+	;;
+    abort-upgrade|upgrade)
+        ;;
+    remove|failed-upgrade|abort-install|disappear)
+        ln -sf /dev/null /etc/systemd/user/default.target.wants/cups-fuse.service
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 0
+
+esac
