@@ -8,6 +8,7 @@ if [ -d /run/systemd/system ] ; then
 	systemctl --system daemon-reload >/dev/null || true
 fi
 
+[ -e /etc/systemd/user/default.target.wants/ ] || mkdir -p /etc/systemd/user/default.target.wants/
 case "$1" in
     purge)
 	rm -rf /etc/systemd/user/cups-fuse.service
