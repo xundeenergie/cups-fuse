@@ -7,23 +7,24 @@ set -e
 if [ -d /run/systemd/system ] ; then
 	systemctl --system daemon-reload >/dev/null || true
 fi
+
+
+# For user-services only, for earch target an extra section! for system-services user deb-systemd*
+# put in full unit-name. for example "mkbackup@hourly.service"
 SERVICES="cups-fuse.service"
-TARGET="default.target"
-
-case "$1" in
-
-    configure)
-        for SERVICE in $SERVICES; do
-            [ -e "/etc/systemd/user/${TARGET}.wants/" ] || mkdir -p "/etc/systemd/user/${TARGET}.wants/"
-            [ -e "/usr/lib/systemd/user/${SERVICE}" ] && ln -sf "/usr/lib/systemd/user/${SERVICE}" "/etc/systemd/user/${TARGET}.wants/${SERVICE}"
-        done
 
 [ -e /etc/systemd/user/default.target.wants/ ] || mkdir -p /etc/systemd/user/default.target.wants/
 case "$1" in
     purge)
         for SERVICE in $SERVICES; do
-            [ -e "/etc/systemd/user/${SERVICE}" ] || rf -rf "/etc/systemd/user/${SERVICE}"
-            [ -e "/etc/systemd/user/${TARGET}.wants/${SERVICE}" ] || rm -rf "/etc/systemd/user/${TARGET}.wants/${SERVICE}"
+            UNIT_NAME=$(echo $SERVICE|sed -e 's/\@.*\.\([a-z][a-z]*\)$/@.\1/')
+            for TARGET in $(gawk -F "=" '\
+                    $1 ~ /WantedBy/ {split($2,wants," ")} \
+                    $1 ~ /RequiredBy/ {split($2,requ," ")} \
+                    END{for (w in wants){print wants[w]".wants"};for (r in requ){print requ[r]".requires"}}' "/usr/lib/systemd/user/${UNIT_NAME}");do
+                [ -e "/etc/systemd/user/${SERVICE}" ] || rf -rf "/etc/systemd/user/${SERVICE}"
+                [ -e "/etc/systemd/user/${TARGET}/${SERVICE}" ] || rm -rf "/etc/systemd/user/${TARGET}/${SERVICE}"
+            done
         done
 	#rm -rf /etc/systemd/user/cups-fuse.service
         #rm -rf /etc/systemd/user/default.target.wants/cups-fuse.service
@@ -34,14 +35,46 @@ case "$1" in
         ;;
     remove)
         for SERVICE in $SERVICES; do
-            [ -e "/etc/systemd/user/${TARGET}.wants/" ] || mkdir -p "/etc/systemd/user/${TARGET}.wants/"
-            ln -sf "/dev/null" "/etc/systemd/user/${TARGET}.wants/${SERVICE}"
+            for TARGET in $(gawk -F "=" '\
+                    $1 ~ /WantedBy/ {split($2,wants," ")} \
+                    $1 ~ /RequiredBy/ {split($2,requ," ")} \
+                    END{for (w in wants){print wants[w]".wants"};for (r in requ){print requ[r]".requires"}}' "/usr/lib/systemd/user/${UNIT_NAME}");do
+                [ -e "/etc/systemd/user/${TARGET}" ] || mkdir -p "/etc/systemd/user/${TARGET}"
+                ln -sf "/dev/null" "/etc/systemd/user/${TARGET}/${SERVICE}"
+            done
         done
-        #ln -sf /dev/null /etc/systemd/user/default.target.wants/cups-fuse.service
         ;;
 
     *)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 0
+        ;;
+esac
+
+# System-Services:
+# put in full unit-name. for example "mkbackup@hourly.service"
+SERVICES=""
+
+case "$1" in
+    purge)
+	if [ -x "/usr/bin/deb-systemd-helper" ]; then
+		deb-systemd-helper purge $SERVICES >/dev/null
+		deb-systemd-helper unmask $SERVICES >/dev/null
+	fi
+        ;;
+    abort-upgrade)
+        ;;
+    remove)
+        if [ -x "/usr/bin/deb-systemd-helper" ]; then
+                deb-systemd-helper mask $SERVICES >/dev/null
+        fi
+        ;;
+    upgrade|failed-upgrade|abort-install|disappear)
+        ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
 
 esac
