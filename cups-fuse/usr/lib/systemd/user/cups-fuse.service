@@ -1,6 +1,7 @@
 [Unit]
 Description=Set XDG_PRINTERS_DIR and XDG_PRINTERS_DIR_SD and start path-unit for cups-fuse
 After=default.target
+Conflicts=shutdown.target
 
 [Service]
 ExecStartPre=-/usr/bin/xdg-user-dirs-update

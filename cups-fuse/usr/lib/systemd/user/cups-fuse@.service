@@ -2,6 +2,7 @@
 Description=Present directory for each printer in %f
 ConditionPathExists=%f
 PartOf=cups-fuse.service
+Conflicts=shutdown.target
 
 [Service]
 ExecStart=/usr/bin/CupsFS.py -f %f

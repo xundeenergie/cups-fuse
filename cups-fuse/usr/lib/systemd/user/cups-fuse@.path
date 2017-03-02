@@ -1,6 +1,7 @@
 [Unit]
 Description=Starts mounting printers to %f, if this directory exists
 PartOf=cups-fuse.service
+Conflicts=shutdown.target
 
 [Path]
 PathExists=%f
