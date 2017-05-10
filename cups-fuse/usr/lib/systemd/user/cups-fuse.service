@@ -5,7 +5,7 @@ Conflicts=shutdown.target
 #ConditionCapability=CAP_SYS_ADMIN
 
 [Service]
-ExecStartPre=/bin/sh -c '/usr/bin/test %U -ge 900'
+#ExecStartPre=/bin/sh -c '/usr/bin/test %U -ge 900'
 ExecStartPre=-/usr/bin/xdg-user-dirs-update
 ExecStartPre=/bin/sh -c '/bin/systemctl --user set-environment XDG_PRINTERS_DIR=$(xdg-user-dir PRINTERS)'
 ExecStartPre=/bin/sh -c '/bin/systemctl --user set-environment XDG_PRINTERS_DIR_SD=$(/bin/systemd-escape -p ${XDG_PRINTERS_DIR})'
