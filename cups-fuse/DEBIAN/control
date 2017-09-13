@@ -1,5 +1,5 @@
 Package: cups-fuse
-Version: 0.9.63
+Version: 0.9.64
 Section: cups
 Priority: extra
 Architecture: all
