@@ -1,9 +1,8 @@
 [Unit]
 Description=Set XDG_PRINTERS_DIR and XDG_PRINTERS_DIR_SD and start path-unit for cups-fuse for user %t %U
 After=default.target
-Conflicts=shutdown.target
-Before=umount.target
-Conflicts=umount.target
+Before=umount.target sleep.target reboot.target shutdown.target
+Conflicts=umount.target sleep.target reboot.target shutdown.target
 #ConditionCapability=CAP_SYS_ADMIN
 
 [Service]
